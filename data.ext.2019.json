@@ -1,0 +1,7 @@
+[
+  { "id": "US-AS", "name": "American Samoa", "population": 55641, "representatives": 1},
+  { "id": "US-GU", "name": "Guam", "population": 165718, "representatives": 1},
+  { "id": "US-MP", "name": "Northern Mariana Islands", "population": 55194, "representatives": 1},
+  { "id": "US-PR", "name": "Puerto Rico", "population": 3193694, "representatives": 1},
+  { "id": "US-VI", "name": "U.S. Virgin Islands", "population": 104914, "representatives": 1}
+]
