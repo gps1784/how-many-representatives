@@ -1,76 +1,30 @@
-function generateMapByYear(divId, yearString, valFunct) {
-  fetch("data." + yearString + ".json")
+// TODO: rename
+function fetchStatesByYear(yearStr) {
+  return fetch("data." + yearStr + ".json")
     .then(resp => resp.json())
-    .then(json => generateMapWithJson(divId, json, valFunct));
-} // generateMapByYear()
+} // fetchStatesByYear()
 
-function generateMapWithJson(divId, json, valFunct) {
-  for(const el of json) {
-    el.value = valFunct(json,el);
-  }
-  console.log(json);
-  am4core.ready(function() {
-    // Load themes
-    am4core.useTheme(am4themes_dark);
+function representatives_createStatesMap(targetDivId, yearStr, calcValue = (arr, el) => el.value, suffix = "", lowClamp = 0, highClamp = Infinity) {
+  fetchStatesByYear(yearStr)
+    .then(arr => am4charts_helper_arrToMap(targetDivId, arr, calcValue, suffix, lowClamp, highClamp));
+}
 
-    // Create map instance
-    var ch = am4core.create(divId, am4maps.MapChart);
-    // Set map definition
-    ch.geodata = am4geodata_usaLow;
-    // Set projection
-    ch.projection = new am4maps.projections.AlbersUsa();
+function representatives_createStatesMap_pop(targetDivId, yearStr) {
+  fetchStatesByYear(yearStr).then(json => am4charts_helper_arrToMap(targetDivId, json, (arr, el) => el.population));
+}
 
-    // Create map polygon series
-    var polyS = ch.series.push(new am4maps.MapPolygonSeries());
-    //polyS.include = ["US", "GU", "MP", "PR", "AS", "VI"];
-    // Make map load polygon data (state shapes and names) from GeoJSON
-    polyS.useGeodata = true;
-    // Set heatmap values for each state
-    polyS.data = json;
-    // Set min/max fill color for each area
-    polyS.heatRules.push({
-      property: "fill",
-      target: polyS.mapPolygons.template,
-      //min: am4core.color("#00cc55"),
-      //max: am4core.color("#cc0055"),
-      min: ch.colors.getIndex(1).brighten(1),
-      max: ch.colors.getIndex(1).brighten(-0.3),
-      logarithmic: true
-    });
+function representatives_createStatesMap_rep(targetDivId, yearStr) {
+  fetchStatesByYear(yearStr).then(json => am4charts_helper_arrToMap(targetDivId, json, (arr, el) => el.representatives));
+}
 
-    // Set up heat legend
-    let values = json.map(el => el.value);
-    let heatL = ch.createChild(am4maps.HeatLegend);
-    heatL.series = polyS;
-    heatL.align = "right";
-    heatL.valign = "bottom";
-    heatL.width = am4core.percent(15);
-    heatL.marginRight = am4core.percent(4);
-    heatL.minValue = Math.min(...values);
-    heatL.maxValue = Math.max(...values);
+function representatives_createStatesMap_perRep(targetDivId, yearStr) {
+  fetchStatesByYear(yearStr).then(json => am4charts_helper_arrToMap(targetDivId, json, (arr, el) => Math.round(el.population / el.representatives)));
+}
 
-    // Set up custom heat map legend labels using axis ranges
-    var minR = heatL.valueAxis.axisRanges.create();
-    minR.value = heatL.minValue;
-    minR.label.text = heatL.minValue.toLocaleString();
-    var maxR = heatL.valueAxis.axisRanges.create();
-    maxR.value = heatL.maxValue;
-    maxR.label.text = heatL.maxValue.toLocaleString();
-    // Blank out internal heat legend value axis labels
-    heatL.valueAxis.renderer.labels.template.adapter.add("text", function(labelText) {
-      return "";
-    });
-
-
-    // Configure series tooltip
-    var polyT = polyS.mapPolygons.template;
-    polyT.tooltipText = "{name}: {value}";
-    polyT.nonScalingStroke = true;
-    polyT.strokeWidth = 0.5;
-
-    // Create hover state and set alternative fill color
-    var hs = polyT.states.create("hover");
-    hs.properties.fill = am4core.color("#3c5bdc");
-
-  }); // end am4core.ready()
+function representatives_createStatesMap_cpi(targetDivId, yearStr) {
+  fetchStatesByYear(yearStr).then(json => am4charts_helper_arrToMap(targetDivId, json, function(arr, el) {
+    let average = arr.map(e => e.population).reduce((sum, pop) => sum + pop) /
+                  arr.map(e => e.representatives).reduce((sum, rep) => sum + rep);
+    return (average / (el.population / el.representatives));
+  }));
 }
