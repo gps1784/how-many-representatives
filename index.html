@@ -34,26 +34,28 @@
       <p>Unfortunately, this is not the way that the U.S. House operates. There are currently 435 seats available in the House. This number has not (meaningfully<a>[footnote]</a>) changed since 1911, when the <a>Apportionment Act of 1911</a> set the total number of representatives at 435. This number was frozen outright under the <a>Reapportionment Act of 1929</a>, where the number has remained<a>[footnote]</a>.</p>
       <p>Below is a interactive <a>map showing the population of each state</a> in the United States. When compared with the <a>map showing the allocation of representatives</a>, this looks quite fair. Big states have more representation, smaller states have less representation. But when we compare this with the <a>map showing the average number of constituents per representative</a>, a trend appears: because of the artificially limited size of the House of Representatives, exaggerated rounding errors in small states cause them to be either wildly over-represented or under-represented in the house. The extreme swings in the constituent-to-representative ratio cause some larger states to fall far short on representation against the national average.</p>
       <hr>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ return el.population });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2010", function(arr,el){ return el.population });'>
         <i class="material-icons left">group</i>
         Population
       </a>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ return el.representatives });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2010", function(arr,el){ return el.representatives });'>
         <i class="material-icons left">account_balance</i>
         Number of Representatives
       </a>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ return Math.round(el.population / el.representatives) });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2010", function(arr,el){ return Math.round(el.population / el.representatives) });'>
         <i class="material-icons left">how_to_reg</i>
         Constituents per Representative
       </a>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ let average = arr.map(e => e.population).reduce((a,pop) => a + pop) / arr.map(e => e.representatives).reduce((a,rep) => a + rep); return (average / (el.population / el.representatives)).toPrecision(3) });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2010", function(arr,el){ let average = arr.map(e => e.population).reduce((a,pop) => a + pop) / arr.map(e => e.representatives).reduce((a,rep) => a + rep); return (average / (el.population / el.representatives)).toPrecision(3) });'>
         <i class="material-icons left">how_to_reg</i>
         Constituent Power Index
       </a>
       <hr>
       <div id="chartdiv"></div>
       <hr>
-      <p>Due to these wild swings in relative representation, Wyoming (the least populated state), has nearly twice the relative representation of its neighbor Montana.</p>
+      <p>Due to these wild swings in relative representation, Wyoming (the least populated state), has nearly twice the relative representation of its neighbor Montana. This is best exemplified by the <a>Constituent Power Index</a> (CPI), a measure of how large (under-represented) or small (over-represented) a given state's district is when compared to the national average. A state with a lower constituent-to-representative ratio will have higher CPI.</p>
+      <p>If the purpose of the House of Representatives is to apportion seats relative to population, the imbalance in CPI is undeniable evidence that House, while correlated to population, is not as precisely proportional as it could (or should) be.</p>
+      <p>One of the more obvious solutions is to add seats to the House of Representatives. With more representatives, it should be easier to bring the ratios of outlier states more in line with the average state. Regardless of whether the disparity in CPI improves, it is worth noting that adding more seats to the House will generally improve the constituent-to-representative ratio nationally. Therefore, it could be argued, adding <b>more seats will always enfranchise and empower more American citizens</b>.</p>
     </div>
   </body>
 </html>
