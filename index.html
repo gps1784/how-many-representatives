@@ -22,7 +22,7 @@
     </style>
 
     <script>
-      generateMapByYear("chartdiv", "2019", function(el){ return el.population });
+      generateMapByYear("chartdiv", "2019", function(arr,el){ return el.population });
     </script>
 
   </head>
@@ -34,17 +34,21 @@
       <p>Unfortunately, this is not the way that the U.S. House operates. There are currently 435 seats available in the House. This number has not (meaningfully<a>[footnote]</a>) changed since 1911, when the <a>Apportionment Act of 1911</a> set the total number of representatives at 435. This number was frozen outright under the <a>Reapportionment Act of 1929</a>, where the number has remained<a>[footnote]</a>.</p>
       <p>Below is a interactive <a>map showing the population of each state</a> in the United States. When compared with the <a>map showing the allocation of representatives</a>, this looks quite fair. Big states have more representation, smaller states have less representation. But when we compare this with the <a>map showing the average number of constituents per representative</a>, a trend appears: because of the artificially limited size of the House of Representatives, exaggerated rounding errors in small states cause them to be either wildly over-represented or under-represented in the house. The extreme swings in the constituent-to-representative ratio cause some larger states to fall far short on representation against the national average.</p>
       <hr>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(el){ return el.population });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ return el.population });'>
         <i class="material-icons left">group</i>
         Population
       </a>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(el){ return el.representatives });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ return el.representatives });'>
         <i class="material-icons left">account_balance</i>
         Number of Representatives
       </a>
-      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(el){ return Math.round(el.population / el.representatives) });'>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ return Math.round(el.population / el.representatives) });'>
         <i class="material-icons left">how_to_reg</i>
         Constituents per Representative
+      </a>
+      <a class="waves-effect btn" onclick='generateMapByYear("chartdiv", "2019", function(arr,el){ let average = arr.map(e => e.population).reduce((a,pop) => a + pop) / arr.map(e => e.representatives).reduce((a,rep) => a + rep); return (average / (el.population / el.representatives)).toPrecision(3) });'>
+        <i class="material-icons left">how_to_reg</i>
+        Constituent Power Index
       </a>
       <hr>
       <div id="chartdiv"></div>

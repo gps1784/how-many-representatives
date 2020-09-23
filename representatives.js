@@ -6,7 +6,7 @@ function generateMapByYear(divId, yearString, valFunct) {
 
 function generateMapWithJson(divId, json, valFunct) {
   for(const el of json) {
-    el.value = valFunct(el);
+    el.value = valFunct(json,el);
   }
   console.log(json);
   am4core.ready(function() {
