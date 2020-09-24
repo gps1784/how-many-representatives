@@ -1,104 +1,98 @@
-// TODO: rename to format am4charts_helper_[TYPE]_[FUNCTION]
-
-// TODO: theme helper?
-
-// only reinitialize if the projection style or geodata resolution is changing
-function am4charts_helper_initMap(targetDivId, geodata, projection) {
-  var map;
+function am4charts_helper_map__initialize(_target, _geo, _proj, _series=new am4maps.MapPolygonSeries(), _geobool=true) {
+  let map;
   am4core.ready(function() {
-    map            = am4core.create(targetDivId, am4maps.MapChart);
-    map.geodata    = geodata;
-    map.projection = projection;
+    am4core.useTheme(am4themes_dark);
+
+    map               = am4core.create(_target, am4maps.MapChart);
+    map.geodata       = _geo;
+    map.projection    = _proj;
   });
   return map;
-}
+} // am4charts_helper_map__initialize()
 
-function am4charts_helper_pushMapSeries(chart, seriesType, arr, geo = true) {
-  var series;
+function am4charts_helper_map__addSeries(_map, _series=new am4maps.MapPolygonSeries(), _geobool=true) {
+  let series;
   am4core.ready(function() {
-    series            = chart.series.push(seriesType);
-    series.useGeodata = geo;
-    series.data       = arr;
+    series            = _map.series.push(_series);
   });
   return series;
-}
+} // am4charts_helper_map__addSeries()
 
-function am4charts_helper_createMapHeatLegend(chart) {
-  var legend;
-  am4core.ready(function() {
-    legend = chart.createChild(am4maps.HeatLegend);
+function am4charts_helper_map__setHeatRules(_series, _color1, _color2, _log) {
+  _series.heatRules.push({
+    property:    "fill",
+    target:      _series.mapPolygons.template,
+    min:         _color1,
+    max:         _color2,
+    logarithmic: true
   });
-  return legend;
-}
+} // am4charts_helper_map__setHeatRules()
 
-function am4charts_helper_setMapHeatLegend(legend, series, values) {
+function am4charts_helper_map__loadSeriesData(_series, _data, _geobool=true) {
+  _series.useGeodata = _geobool;
+  _series.data       = _data;
+} // am4charts_helper_map__loadSeriesData()
+
+function am4charts_helper_map__setHeatLegend(_map, _series, _arr, _suffix="") {
+  let values = _arr.map(el => el.value);
+  let legend, minR, maxR;
   am4core.ready(function() {
-    legend.series = series;
+    if( (legend = _map.heatLegend) === undefined ) {
+      legend = _map.createChild(am4maps.HeatLegend);
+    } else {
+      legend.valueAxis.axisRanges.clear();
+    }
+    legend.series = _series;
     legend.align  = "right";
     legend.valign = "bottom";
-    legend.width  = am4core.percent(15);
+    legend.width       = am4core.percent(15);
     legend.marginRight = am4core.percent(4);
     legend.minValue = Math.min(...values);
     legend.maxValue = Math.max(...values);
-  });
-}
-
-function am4charts_helper_createMapAxisLabels(legend) {
-  am4core.ready(function() {
-    let minR        = legend.valueAxis.axisRanges.create();
+    minR            = legend.valueAxis.axisRanges.create();
     minR.value      = legend.minValue;
-    minR.label.text = legend.minValue.toLocaleString();
-    let maxR        = legend.valueAxis.axisRanges.create();
+    minR.label.text = legend.minValue.toLocaleString() + _suffix;
+    maxR            = legend.valueAxis.axisRanges.create();
     maxR.value      = legend.maxValue;
-    maxR.label.text = legend.maxValue.toLocaleString();
-    // Blank out internal heat legend value axis labels
-    legend.valueAxis.renderer.labels.template.adapter.add("text", function(label) { return "" });
+    maxR.label.text = legend.maxValue.toLocaleString() + _suffix;
+    legend.valueAxis.renderer.labels.template.adapter.add("text", label => "");
   });
-}
+  _map.heatLegend = legend;
+  return legend;
+} // am4charts_helper_map__setHeatLegend()
 
-// TODO: this constantly re-initializes the map, where that is not necessary
-function am4charts_helper_arrToMap(targetDivId, arr, calcValue = function(arr, el) {return el.value}, suffix = "", lowClamp = 0, highClamp = Infinity) {
-  for(const el of arr) {
-    el.value = calcValue(arr, el);
-  }
+function am4charts_helper_map__setTooltip(_series, _suffix="", _text="[bold]{name}:[/] {value}") {
+  let tooltip, hover;
   am4core.ready(function() {
-    // Load themes
-    am4core.useTheme(am4themes_dark);
+    tooltip                  = _series.mapPolygons.template;
+    tooltip.tooltipText      = _text + _suffix;
+    tooltip.nonScalingStroke = true;
+    tooltip.strokeWidth      = 0.5;
+    hover                    = tooltip.states.create("hover");
+  });
+  return tooltip;
+} // am4charts_helper_map__setTooltip()
 
-    let ch = am4charts_helper_initMap(targetDivId, am4geodata_usaLow, new am4maps.projections.AlbersUsa());
-    let se = am4charts_helper_pushMapSeries(ch, new am4maps.MapPolygonSeries(), arr);
-    let va = arr.map(el => el.value).sort(); // values array
-    let cv = va.slice(lowClamp, highClamp); // clamped values
+function am4charts_helper_map__loadData(_map, _series, _data, _suffixL="", _suffixS="") {
+  console.log(_data);
+  am4charts_helper_map__setHeatRules(_series, am4core.color("#00cc55"), am4core.color("#0055cc"));
+  am4charts_helper_map__loadSeriesData(_series, _data);
+  am4charts_helper_map__setHeatLegend(_map, _series, _data, _suffixS);
+  am4charts_helper_map__setTooltip(_series, _suffixL);
+} // am4charts_helper_map__loadData()
 
-    // Set min/max fill color for each area
-    se.heatRules.push({
-      property: "fill",
-      target: se.mapPolygons.template,
-      min: am4core.color("#00cc55"),
-      max: am4core.color("#0055cc"),
-      //min: ch.colors.getIndex(1).brighten(1),
-      //max: ch.colors.getIndex(1).brighten(-0.3),
-      logarithmic: true
-    });
+function am4charts_helper_map_create(_target, _data, _suffixL="", _suffixS="") {
+  let map = am4charts_helper_map__initialize(_target, am4geodata_usaLow, new am4maps.projections.AlbersUsa());
+  let series = am4charts_helper_map__addSeries(map);
+  am4charts_helper_map__loadData(map, series, _data, _suffixL, _suffixS);
+  return map;
+} // am4charts_helper_map_create()
 
-    // Set up heat legend
-    let le = am4charts_helper_createMapHeatLegend(ch);
-    am4charts_helper_setMapHeatLegend(le, se, va);
-
-    am4charts_helper_createMapAxisLabels(le);
-
-    // Configure series tooltip
-    var polyT = se.mapPolygons.template;
-    polyT.tooltipText = "{name}: {value}" + suffix;
-    polyT.nonScalingStroke = true;
-    polyT.strokeWidth = 0.5;
-
-    // Create hover state and set alternative fill color
-    var hs = polyT.states.create("hover");
-    hs.properties.fill = am4core.color("#3c5bdc");
-
-  }); // end am4core.ready()
-}
+function am4charts_helper_map_edit(_target, _data, _suffixL="", _suffixS="") {
+  let map = am4core.registry.baseSprites.find(map => map.htmlContainer.id === _target);
+  am4charts_helper_map__loadData(map, map.series.values[0], _data, _suffixL, _suffixS);
+} // am4charts_helper_map_edit()
+//// END revamp
 
 function am4charts_helper_scatter_createFromArray(target, arr, calcValue = function(arr, el) {return el.value}, suffix = "") {
   for(const el of arr) {
@@ -136,7 +130,7 @@ function am4charts_helper_scatter_createFromArray(target, arr, calcValue = funct
     bullet.fillOpacity = 0.5;
     bullet.stroke = am4core.color("#ffffff");
     bullet.hiddenState.properties.opacity = 0;
-    bullet.tooltipText = "[bold]{name}:[/]\nPopulation: {valueX.value}\nRepresentatives: {value.value}\nCPI:{valueY.value}";
+    bullet.tooltipText = "[bold]{name}:[/]\nPopulation: {valueX.value}\nRepresentatives: {value.value}\nCPI: {valueY.value}";
 
     var outline = chart.plotContainer.createChild(am4core.Circle);
     outline.fillOpacity = 0;
