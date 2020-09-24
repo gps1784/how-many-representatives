@@ -9,6 +9,7 @@
 
     <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/geodata/usaLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/themes/dark.js"></script>
@@ -16,17 +17,18 @@
     <script src="assets/js/am4charts.helper.js"></script>
     <style>
       body { background-color: #30303d; color: #fff; }
-      #chartdiv {
+      .am4chart {
         width: 100%;
         height: 500px
       }
     </style>
 
     <script>
-      fetchStatesByYear("2010").then(json =>
-        am4charts_helper_arrToMap("chartdiv", json, (arr,el) => el.population)
-      );
-      //generateMapByYear("chartdiv", "2019", function(arr,el){ return el.population });
+      representatives_createStatesMap_pop("chartdiv", "2010");
+      fetchStatesByYear("2010").then(function(json) {
+        json = representatives_prepareArray(json);
+        am4charts_helper_scatter_createFromArray("chart_xyscatter_pop_vs_cpi", json, function(arr,el) { el.x = el.pop; el.y = el.cpi; return el.reps });
+      });
     </script>
 
   </head>
@@ -55,11 +57,14 @@
         Constituent Power Index
       </a>
       <hr>
-      <div id="chartdiv"></div>
+      <div class="am4chart" id="chartdiv"></div>
       <hr>
       <p>Due to these wild swings in relative representation, Wyoming (the least populated state), has nearly twice the relative representation of its neighbor Montana. This is best exemplified by the <a>Constituent Power Index</a> (CPI), a measure of how large (under-represented) or small (over-represented) a given state's district is when compared to the national average. A state with a lower constituent-to-representative ratio will have higher CPI.</p>
       <p>If the purpose of the House of Representatives is to apportion seats relative to population, the imbalance in CPI is undeniable evidence that House, while correlated to population, is not as precisely proportional as it could (or should) be.</p>
       <p>One of the more obvious solutions is to add seats to the House of Representatives. With more representatives, it should be easier to bring the ratios of outlier states more in line with the average state. Regardless of whether the disparity in CPI improves, it is worth noting that adding more seats to the House will generally improve the constituent-to-representative ratio nationally. Therefore, it could be argued, adding <b>more seats will always enfranchise and empower more American citizens</b>.</p>
+      <hr>
+      <div class="am4chart" id="chart_xyscatter_pop_vs_cpi"></div>
+      <hr>
     </div>
   </body>
 </html>

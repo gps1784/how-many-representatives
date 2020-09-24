@@ -1,3 +1,5 @@
+// TODO: rename to format am4charts_helper_[TYPE]_[FUNCTION]
+
 // TODO: theme helper?
 
 // only reinitialize if the projection style or geodata resolution is changing
@@ -54,6 +56,7 @@ function am4charts_helper_createMapAxisLabels(legend) {
   });
 }
 
+// TODO: this constantly re-initializes the map, where that is not necessary
 function am4charts_helper_arrToMap(targetDivId, arr, calcValue = function(arr, el) {return el.value}, suffix = "", lowClamp = 0, highClamp = Infinity) {
   for(const el of arr) {
     el.value = calcValue(arr, el);
@@ -64,7 +67,6 @@ function am4charts_helper_arrToMap(targetDivId, arr, calcValue = function(arr, e
 
     let ch = am4charts_helper_initMap(targetDivId, am4geodata_usaLow, new am4maps.projections.AlbersUsa());
     let se = am4charts_helper_pushMapSeries(ch, new am4maps.MapPolygonSeries(), arr);
-    console.log(arr);
     let va = arr.map(el => el.value).sort(); // values array
     let cv = va.slice(lowClamp, highClamp); // clamped values
 
@@ -94,6 +96,87 @@ function am4charts_helper_arrToMap(targetDivId, arr, calcValue = function(arr, e
     // Create hover state and set alternative fill color
     var hs = polyT.states.create("hover");
     hs.properties.fill = am4core.color("#3c5bdc");
+
+  }); // end am4core.ready()
+}
+
+function am4charts_helper_scatter_createFromArray(target, arr, calcValue = function(arr, el) {return el.value}, suffix = "") {
+  for(const el of arr) {
+    el.value = calcValue(arr, el);
+  }
+  am4core.ready(function() {
+
+    // Themes begin
+    am4core.useTheme(am4themes_dark);
+    // Themes end
+
+    var chart = am4core.create(target, am4charts.XYChart);
+
+    var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
+    valueAxisX.renderer.ticks.template.disabled = true;
+    valueAxisX.renderer.axisFills.template.disabled = true;
+
+    var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxisY.renderer.ticks.template.disabled = true;
+    valueAxisY.renderer.axisFills.template.disabled = true;
+
+    var series = chart.series.push(new am4charts.LineSeries());
+    series.dataFields.valueX = "x";
+    series.dataFields.valueY = "y";
+    series.dataFields.value = "value";
+    series.strokeOpacity = 0;
+    series.sequencedInterpolation = true;
+    series.tooltip.pointerOrientation = "vertical";
+
+    var bullet = series.bullets.push(new am4core.Circle());
+    bullet.fill = am4core.color("#00cc55");
+    bullet.propertyFields.fill = "color";
+    bullet.strokeOpacity = 0;
+    bullet.strokeWidth = 2;
+    bullet.fillOpacity = 0.5;
+    bullet.stroke = am4core.color("#ffffff");
+    bullet.hiddenState.properties.opacity = 0;
+    bullet.tooltipText = "[bold]{name}:[/]\nPopulation: {valueX.value}\nRepresentatives: {value.value}\nCPI:{valueY.value}";
+
+    var outline = chart.plotContainer.createChild(am4core.Circle);
+    outline.fillOpacity = 0;
+    outline.strokeOpacity = 0.8;
+    outline.stroke = am4core.color("#ff0000");
+    outline.strokeWidth = 2;
+    outline.hide(0);
+
+    var blurFilter = new am4core.BlurFilter();
+    outline.filters.push(blurFilter);
+
+    bullet.events.on("over", function(event) {
+      var target = event.target;
+      outline.radius = target.pixelRadius + 2;
+      outline.x = target.pixelX;
+      outline.y = target.pixelY;
+      outline.show();
+    })
+
+    bullet.events.on("out", function(event) {
+      outline.hide();
+    })
+
+    var hoverState = bullet.states.create("hover");
+    hoverState.properties.fillOpacity = 1;
+    hoverState.properties.strokeOpacity = 1;
+
+    series.heatRules.push({ target: bullet, min: 2, max: 60, property: "radius" });
+
+    bullet.adapter.add("tooltipY", function (tooltipY, target) {
+      return -target.radius;
+    })
+
+    chart.cursor = new am4charts.XYCursor();
+    chart.cursor.behavior = "zoomX";
+    chart.cursor.snapToSeries = series;
+
+    chart.scrollbarX = new am4core.Scrollbar();
+
+    chart.data = arr;
 
   }); // end am4core.ready()
 }
