@@ -6,16 +6,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="assets/css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
-    <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
-    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
-    <script src="https://cdn.amcharts.com/lib/4/geodata/usaLow.js"></script>
-    <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
-    <script src="https://cdn.amcharts.com/lib/4/themes/dark.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/maps.js" async></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js" async></script>
+    <script src="https://cdn.amcharts.com/lib/4/geodata/usaLow.js" async></script>
+    <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js" async></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/dark.js" async></script>
     <script src="representatives.js"></script>
-    <script src="assets/js/am4charts.helper.js"></script>
+    <script src="assets/js/am4charts.helper.js" async></script>
 
     <script>
       representatives_createStatesMap("chart_map_states_swap", "2010", (arr, el) => el.pop, " people");
@@ -30,7 +30,7 @@
     <h1 class="header center">How Many Representatives?</h1>
     <div class="container">
       <h4 class="header center">An analysis of the United States House of Representatives</h4>
-      <p>Ask any grade-school child: What is the difference between the House and the Senate? The bicameral (two body) legislature of the United States Congress was a compromise between small states and large states. The Senate was designed to allow exactly two senators per state, <b>giving each state equal representation, regardless of population (size)</b>. To balance this, the House of Representatives was designed to have its seats <b>proportioned to the population (size) of each state</b>. This would give more influence to the states with more people. Put another way, this would distribute influence in the House of Representatives in proportion with the population.</p>
+      <p>Ask any grade-school child: What is the difference between the House and the Senate? The bicameral (two body) legislature of the United States Congress was a compromise between small states and large states. The Senate was designed to allow exactly two senators per state, <b>giving each state's government equal representation, regardless of population (size)</b>. To balance this, the House of Representatives was designed to have its seats <b>proportioned to the population (size) of each state</b>. This would give more influence to the states with more people. Put another way, this would distribute influence in the House of Representatives in proportion with the population.</p>
       <p>Unfortunately, this is not the way that the U.S. House operates. There are currently 435 seats available in the House. This number has not (meaningfully<a>[footnote]</a>) changed since 1911, when the <a>Apportionment Act of 1911</a> set the total number of representatives at 435. This number was frozen outright under the <a>Reapportionment Act of 1929</a>, where the number has remained<a>[footnote]</a>.</p>
       <p>Below is a interactive <a>map showing the population of each state</a> in the United States. When compared with the <a>map showing the allocation of representatives</a>, this looks quite fair. Big states have more representation, smaller states have less representation. But when we compare this with the <a>map showing the average number of constituents per representative</a>, a trend appears: because of the artificially limited size of the House of Representatives, exaggerated rounding errors in small states cause them to be either wildly over-represented or under-represented in the house. The extreme swings in the constituent-to-representative ratio cause some larger states to fall far short on representation against the national average.</p>
       <hr>
